@@ -5,3 +5,5 @@ services:
     build: .
     container_name: meetroom
     restart: always
+    volumes:
+      - ./logs:/logs
