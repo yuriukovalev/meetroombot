@@ -25,15 +25,23 @@ storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
 
-# 🔹 3. Файл логов 📂
-LOG_FILE = "bot_usage.log"
 
+# 1️⃣ Создаём путь к папке LOGS (Корневая папка хоста)
+LOG_DIR = "/logs"
+LOG_FILE = os.path.join(LOG_DIR, "bot_usage.log")
+
+# 2️⃣ Проверяем, существует ли папка /logs (создаём при необходимости)
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
+# 3️⃣ Функция Логирования
 def log_action(user_id, action):
-    """ Записываем действия пользователя в файл логов """
+    """ Записываем действия пользователя в лог """
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_entry = f"{timestamp} | User {user_id} | {action}\n"
     with open(LOG_FILE, "a") as file:
         file.write(log_entry)
+
 
 # 🔹 4. Определяем состояния FSM
 class BookingState(StatesGroup):
@@ -54,7 +62,7 @@ async def start(message: types.Message, state: FSMContext):
         keyboard=[[KeyboardButton(text=city)] for city in DATA.keys()], resize_keyboard=True
     )
 
-    print(f"🎯 Установлено состояние: {await state.get_state()}")  
+    print(f"🎯 Установлено состояние: {await state.get_state()}")
     await message.answer("🏙 Выбери город:", reply_markup=markup)
 
 # 📌 Выбор города
@@ -83,7 +91,7 @@ async def choose_office(message: types.Message, state: FSMContext):
     if message.text == "⬅️ Назад":
         await start(message, state)
         return
-    
+
     user_data = await state.get_data()
     city = user_data.get("city", "")
 
@@ -161,7 +169,7 @@ async def choose_room(message: types.Message, state: FSMContext):
     floor = user_data.get("floor", "")
 
     office_data = DATA.get(city, {}).get(office, {})
-    rooms = office_data.get(floor, {}) if floor else office_data  
+    rooms = office_data.get(floor, {}) if floor else office_data
 
     if message.text not in rooms:
         return await message.answer("❌ Такой переговорной нет! Выберите из списка.")
