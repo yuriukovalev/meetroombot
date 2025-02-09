@@ -63,7 +63,7 @@ async def start(message: types.Message, state: FSMContext):
     )
 
     print(f"🎯 Установлено состояние: {await state.get_state()}")
-    await message.answer("🏙 Выбери город:", reply_markup=markup)
+    await message.answer("Выбери город:", reply_markup=markup)
 
 # 📌 Выбор города
 @dp.message(StateFilter(BookingState.choosing_city), F.text.in_(DATA.keys()))
@@ -83,7 +83,7 @@ async def choose_city(message: types.Message, state: FSMContext):
         resize_keyboard=True
     )
 
-    await message.answer(f"🏙 Ты выбрал {city}. Теперь выбери офис:", reply_markup=markup)
+    await message.answer(f"Ты выбрал {city}. Теперь выбери офис:", reply_markup=markup)
 
 # 📌 Выбор офиса
 @dp.message(StateFilter(BookingState.choosing_office), F.text)
@@ -112,7 +112,7 @@ async def choose_office(message: types.Message, state: FSMContext):
             keyboard=[[KeyboardButton(text=floor)] for floor in floors] + [[KeyboardButton(text="⬅️ Назад")]],
             resize_keyboard=True
         )
-        return await message.answer(f"🏢 Офис {office}. Выберите этаж:", reply_markup=markup)
+        return await message.answer(f"Офис {office}. Выберите этаж:", reply_markup=markup)
 
     await state.set_state(BookingState.choosing_room)
     rooms = office_data
@@ -124,7 +124,7 @@ async def choose_office(message: types.Message, state: FSMContext):
         resize_keyboard=True
     )
 
-    await message.answer(f"🏢 Ты выбрал {office}. Теперь выбери переговорную:", reply_markup=markup)
+    await message.answer(f"Ты выбрал {office}. Теперь выбери переговорную:", reply_markup=markup)
 
 # 📌 Выбор этажа
 @dp.message(StateFilter(BookingState.choosing_floor))
@@ -151,7 +151,7 @@ async def choose_floor(message: types.Message, state: FSMContext):
         resize_keyboard=True
     )
 
-    await message.answer(f"🛗 {floor}. Теперь выбери переговорную:", reply_markup=markup)
+    await message.answer(f"{floor}. Теперь выбери переговорную:", reply_markup=markup)
 
 # 📌 Выбор переговорной с логированием
 @dp.message(StateFilter(BookingState.choosing_room), F.text)
